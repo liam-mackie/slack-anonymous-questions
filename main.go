@@ -48,8 +48,9 @@ func main() {
 	socketmodeHandler.Handle(socketmode.EventTypeConnecting, middlewareConnecting)
 	socketmodeHandler.Handle(socketmode.EventTypeConnectionError, middlewareConnectionError)
 	socketmodeHandler.Handle(socketmode.EventTypeConnected, middlewareConnected)
+	socketmodeHandler.Handle(socketmode.EventTypeHello, middlewareHello)
 
-	// Handle all SlashCommand
+	// Handle slashcommand
 	socketmodeHandler.Handle(socketmode.EventTypeSlashCommand, middlewareSlashCommand)
 	socketmodeHandler.HandleSlashCommand("/askanon", middlewareSlashCommand)
 
@@ -69,6 +70,10 @@ func middlewareConnectionError(evt *socketmode.Event, client *socketmode.Client)
 
 func middlewareConnected(evt *socketmode.Event, client *socketmode.Client) {
 	fmt.Println("Connected to Slack with Socket Mode.")
+}
+
+func middlewareHello(evt *socketmode.Event, client *socketmode.Client) {
+	fmt.Println("Slack says Hello!")
 }
 
 func middlewareSlashCommand(evt *socketmode.Event, client *socketmode.Client) {
