@@ -34,14 +34,12 @@ func main() {
 
 	api := slack.New(
 		botToken,
-		slack.OptionDebug(true),
 		slack.OptionLog(log.New(os.Stdout, "api: ", log.Lshortfile|log.LstdFlags)),
 		slack.OptionAppLevelToken(appToken),
 	)
 
 	client := socketmode.New(
 		api,
-		socketmode.OptionDebug(true),
 		socketmode.OptionLog(log.New(os.Stdout, "socketmode: ", log.Lshortfile|log.LstdFlags)),
 	)
 
@@ -76,20 +74,13 @@ func middlewareConnected(evt *socketmode.Event, client *socketmode.Client) {
 func middlewareSlashCommand(evt *socketmode.Event, client *socketmode.Client) {
 	cmd, ok := evt.Data.(slack.SlashCommand)
 	if !ok {
-		fmt.Printf("Ignored %+v\n", evt)
 		return
 	}
-
-	client.Debugf("Slash command received: %+v", cmd)
-
 	switch cmd.Command {
 	case "/askanon":
 		modalRequest := generateModalRequest()
-		response, err := client.Client.OpenView(cmd.TriggerID, modalRequest)
+		response, _ := client.Client.OpenView(cmd.TriggerID, modalRequest)
 		HashToChannelMap[response.Hash] = cmd.ChannelID
-		if err != nil {
-			fmt.Printf("Error opening view: %s", err)
-		}
 	}
 
 	client.Ack(*evt.Request)
@@ -98,7 +89,6 @@ func middlewareSlashCommand(evt *socketmode.Event, client *socketmode.Client) {
 func middlewareInteractive(evt *socketmode.Event, client *socketmode.Client) {
 	callback, ok := evt.Data.(slack.InteractionCallback)
 	if !ok {
-		fmt.Printf("Ignored %+v\n", evt)
 		return
 	}
 
